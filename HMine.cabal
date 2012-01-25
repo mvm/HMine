@@ -8,6 +8,7 @@ executable HMine
   main-is:         Main.hs
   build-depends:   
                    base >= 4,
-                   GLFW
+                   GLFW,
+                   pngload
   ghc-options:     -Wall
 

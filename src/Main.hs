@@ -3,7 +3,8 @@ module Main where
 import Graphics.Rendering.OpenGL
 import Graphics.UI.GLFW
 import Control.Monad
-import Control.Applicative
+
+import FontRenderer
 
 type Time = Double
 data Universe = NewUniverse {
@@ -16,12 +17,13 @@ bigBang = NewUniverse {isRunning = True} -- initial state of the game
 update :: Universe -> IO Universe
 update univ = do
         x <- shouldClose univ
-        return $ NewUniverse {isRunning = not x}
+        return $ NewUniverse {isRunning = x}
 
 shouldClose :: Universe -> IO Bool
 shouldClose _ = do
         pressed <- getKey ESC
-        return (pressed == Press)
+        windowOpen <- getParam Opened
+        return $ not (pressed == Press) && windowOpen
 
 render :: Universe -> Time -> IO ()
 render _ _ = do
@@ -83,3 +85,4 @@ resizeCallback size@(Size w h) = let [w',h'] = map fromIntegral [w,h]; ratio = w
         matrixMode $= Projection
         loadIdentity
         frustum (-1) 1 (negate ratio) (ratio) 1 100
+        matrixMode $= Modelview 0
