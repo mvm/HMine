@@ -12,15 +12,19 @@ data Universe = NewUniverse {
 bigBang :: Universe
 bigBang = NewUniverse {isRunning = True} -- initial state of the game
 
-update :: Universe -> Universe
-update univ = NewUniverse {isRunning = not $ isRunning univ}
+update :: Universe -> IO Universe
+update univ = do
+        --pollEvents
+        opened <- getKey ESC
+        if opened == Press then return $ NewUniverse {isRunning = False}
+        else
+         return univ
 
 render :: Universe -> Time -> IO ()
 render _ _ = do
         clearColor $= Color4 0 0 0 0
         clear [ColorBuffer]
         swapBuffers
-        sleep 1
 
 maxSkipTicks :: Int
 maxSkipTicks = 5
@@ -29,13 +33,13 @@ updatesPerSecond :: Double
 updatesPerSecond = 25
 
 skipTicks :: Double
-skipTicks = 1000/updatesPerSecond
+skipTicks = 1/updatesPerSecond
 
 updateLoop :: Universe -> Time -> Int -> IO (Universe,Time)
 updateLoop state nextTick loops = get time >>= (\now -> if
         now > nextTick && loops < maxSkipTicks then do
-                sleep 0.001
-                updateLoop (update state) (nextTick + skipTicks) (loops + 1)
+                newUniverse <- update state
+                updateLoop newUniverse (nextTick + skipTicks) (loops + 1)
               else
                 return (state, nextTick)
                 )
@@ -58,6 +62,7 @@ main = do
         windowTitle $= "Hello World!"
         
         windowSizeCallback $= resizeCallback
+        windowCloseCallback $= return True
 
         shadeModel $= Smooth
         depthFunc $= Just Lequal
@@ -70,8 +75,8 @@ main = do
         terminate
 
 resizeCallback :: Size -> IO ()
-resizeCallback size = do
+resizeCallback size@(Size w h) = let [w',h'] = map fromIntegral [w,h]; ratio = w'/h'  in do
         viewport $= (Position 0 0, size)
         matrixMode $= Projection
         loadIdentity
-        frustum (-1) 1 (-1) 1 1 100
+        frustum (-1) 1 (negate ratio) (ratio) 1 100
