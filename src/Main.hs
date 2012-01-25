@@ -3,6 +3,7 @@ module Main where
 import Graphics.Rendering.OpenGL
 import Graphics.UI.GLFW
 import Control.Monad
+import Control.Applicative
 
 type Time = Double
 data Universe = NewUniverse {
@@ -14,11 +15,13 @@ bigBang = NewUniverse {isRunning = True} -- initial state of the game
 
 update :: Universe -> IO Universe
 update univ = do
-        --pollEvents
-        opened <- getKey ESC
-        if opened == Press then return $ NewUniverse {isRunning = False}
-        else
-         return univ
+        x <- shouldClose univ
+        return $ NewUniverse {isRunning = not x}
+
+shouldClose :: Universe -> IO Bool
+shouldClose _ = do
+        pressed <- getKey ESC
+        return (pressed == Press)
 
 render :: Universe -> Time -> IO ()
 render _ _ = do
