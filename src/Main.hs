@@ -34,6 +34,7 @@ skipTicks = 1000/updatesPerSecond
 updateLoop :: Universe -> Time -> Int -> IO (Universe,Time)
 updateLoop state nextTick loops = get time >>= (\now -> if
         now > nextTick && loops < maxSkipTicks then do
+                sleep 0.001
                 updateLoop (update state) (nextTick + skipTicks) (loops + 1)
               else
                 return (state, nextTick)
@@ -52,13 +53,15 @@ main::IO()
 main = do
         initialized <- initialize
         when (not initialized) $ fail "Could not initialize GLFW"
-        opened <- openWindow (Size 640 480) [DisplayAlphaBits 24] Window
+        opened <- openWindow (Size 845 480) [DisplayAlphaBits 24] Window
         when (not opened) $ fail "Could not open window"
         windowTitle $= "Hello World!"
         
         windowSizeCallback $= resizeCallback
 
         shadeModel $= Smooth
+        depthFunc $= Just Lequal
+        lighting $= Enabled
         
         beginningOfTime <- get time
         _ <- gameLoop bigBang beginningOfTime
