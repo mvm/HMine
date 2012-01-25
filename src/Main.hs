@@ -72,6 +72,7 @@ main = do
         shadeModel $= Smooth
         depthFunc $= Just Lequal
         lighting $= Enabled
+        texture Texture2D $= Enabled
         
         beginningOfTime <- get time
         _ <- gameLoop bigBang beginningOfTime
