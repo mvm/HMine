@@ -1,16 +1,19 @@
 module FontRenderer where
 import Codec.Image.PNG
 import Graphics.Rendering.OpenGL
-import Foreign.Ptr
-import Data.Word
+import Foreign.Ptr (Ptr)
+import Data.Array.Storable (withStorableArray)
+import Data.Word (Word8)
 
-type Font = PNGImage
+pixelDataFromArray png = withStorableArray (imageData png) $ (\ptr -> 
+        return $ PixelData RGBA UnsignedByte ptr)
 
-createTextureFromPtr :: Size -> PixelData Word8 -> IO (Maybe TextureObject)
-createTextureFromPtr (Size x y) pxd = do
+createTexture :: PNGImage -> IO (Maybe TextureObject)
+createTexture pngImg = let (w,h) = dimensions pngImg in do
+        pixelData <- pixelDataFromArray pngImg
         [tex] <- genObjectNames 1
         textureBinding Texture2D $= Just tex
-        build2DMipmaps Texture2D RGBA' (fromIntegral x) (fromIntegral y) pxd
+        build2DMipmaps Texture2D RGBA' (fromIntegral w) (fromIntegral h) pixelData
         textureFilter  Texture2D $= ((Linear', Just Nearest), Linear')
         textureFunction $= Modulate
         return $ Just tex
