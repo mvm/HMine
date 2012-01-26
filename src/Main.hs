@@ -5,6 +5,7 @@ import Graphics.UI.GLFW
 import Control.Monad
 
 import FontRenderer
+import Codec.Image.PNG
 
 type Time = Double
 data Universe = NewUniverse {
@@ -74,8 +75,8 @@ main = do
         lighting $= Enabled
         texture Texture2D $= Enabled
         
-        beginningOfTime <- get time
-        _ <- gameLoop bigBang beginningOfTime
+        now <- get time
+        _ <- gameLoop bigBang now
         
         closeWindow
         terminate
