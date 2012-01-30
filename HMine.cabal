@@ -9,6 +9,7 @@ executable HMine
   build-depends:   
                    base >= 4,
                    GLFW,
-                   pngload
+                   pngload,
+                   array
   ghc-options:     -Wall
 
