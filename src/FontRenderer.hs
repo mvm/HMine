@@ -8,6 +8,13 @@ import Data.Word (Word8)
 pixelDataFromArray png = withStorableArray (imageData png) $ (\ptr -> 
         return $ PixelData RGBA UnsignedByte ptr)
 
+loadTextureFromFile :: String -> IO (Maybe TextureObject)
+loadTextureFromFile file = do
+        img <- loadPNGFile file
+        case img of
+                Left e -> do putStrLn e ; return Nothing
+                Right i -> do putStrLn ("Loaded " ++ file) ; createTexture i
+
 createTexture :: PNGImage -> IO (Maybe TextureObject)
 createTexture pngImg = let (w,h) = dimensions pngImg in do
         pixelData <- pixelDataFromArray pngImg

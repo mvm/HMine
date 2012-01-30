@@ -9,16 +9,17 @@ import Codec.Image.PNG
 
 type Time = Double
 data Universe = NewUniverse {
-        isRunning :: Bool -- datos, datos, datos
+        isRunning :: Bool,
+        testedTexture :: Maybe TextureObject
         }
 
 bigBang :: Universe
-bigBang = NewUniverse {isRunning = True} -- initial state of the game
+bigBang = NewUniverse {isRunning = True, testedTexture = Nothing} -- initial state of the game
 
 update :: Universe -> IO Universe
 update univ = do
         x <- shouldClose univ
-        return $ NewUniverse {isRunning = x}
+        return $ NewUniverse {isRunning = x, testedTexture = testedTexture univ}
 
 shouldClose :: Universe -> IO Bool
 shouldClose _ = do
@@ -75,8 +76,9 @@ main = do
         lighting $= Enabled
         texture Texture2D $= Enabled
         
+        tex <- loadTextureFromFile "terrain.png"
         now <- get time
-        _ <- gameLoop bigBang now
+        _ <- gameLoop NewUniverse {isRunning = True, testedTexture = tex} now
         
         closeWindow
         terminate
