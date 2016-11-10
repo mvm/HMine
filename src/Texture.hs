@@ -1,4 +1,4 @@
-module FontRenderer where
+module Texture where
 import Codec.Image.PNG
 import Graphics.Rendering.OpenGL
 import Foreign.Ptr (Ptr)
