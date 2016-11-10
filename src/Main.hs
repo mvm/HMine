@@ -4,7 +4,7 @@ import Graphics.Rendering.OpenGL
 import Graphics.UI.GLFW
 import Control.Monad
 
-import FontRenderer
+import Texture
 import Codec.Image.PNG
 
 type Time = Double
